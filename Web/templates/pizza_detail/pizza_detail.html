@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="pizza-detail-container">
+    <div class="pizza-main">
+        <img src="{{ pizza.image_url }}" alt="{{ pizza.name }}" class="pizza-image">
+        <div class="pizza-info">
+            <h1>{{ pizza.name }}</h1>
+            <p class="description">{{ pizza.description }}</p>
+            <div class="price">{{ pizza.price }} ₽</div>
+            <button class="order-button">Добавить в корзину</button>
+        </div>
+    </div>
+</div>
+    
+</div>
+<style>
+    .pizza-detail-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .pizza-main {
+        display: flex;
+        gap: 30px;
+        align-items: flex-start;
+    }
+
+    .pizza-image {
+        width: 350px; /* Уменьшенный размер картинки */
+        height: auto;
+        border-radius: 8px;
+        object-fit: cover;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .pizza-info {
+        flex: 1;
+    }
+
+    .pizza-info h1 {
+        color: #e67e22;
+        margin-top: 0;
+        font-size: 28px;
+    }
+
+    .description {
+        color: #555;
+        line-height: 1.6;
+        font-size: 16px;
+    }
+
+    .price {
+        font-size: 24px;
+        font-weight: bold;
+        color: #d35400;
+        margin: 15px 0;
+    }
+
+    .order-button {
+        background-color: #e67e22;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .order-button:hover {
+        background-color: #d35400;
+    }
+
+    @media (max-width: 768px) {
+        .pizza-main {
+            flex-direction: column;
+        }
+        
+        .pizza-image {
+            width: 100%;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+    }
+</style>
+{% endblock %}

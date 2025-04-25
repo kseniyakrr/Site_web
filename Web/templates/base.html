@@ -1,0 +1,202 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Пицца{% endblock %}</title> 
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block extra_head %}
+    <style>
+        html {
+          font-size: 24px;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
+    </style>
+{% endblock %} <!-- Блок для добавления дополнительных стилей или скриптов -->
+</head>
+<body>
+  <header class="header">
+    <div class="header-container">
+      <a href="/" class="header-brand">
+        <span class="fs-4" style="font-size: 25px; position: relative; left: -80px;">Наша Пиццерия!</span>  <!-- Уменьшен логотип -->
+      </a>
+    
+      <nav class="header-nav" style="font-size: 14px; ">  <!-- Уменьшены пункты меню -->
+        <a href="#">Меню</a>
+        <a href="#">Поиск</a>
+        <a href="#">Корзина</a>
+        <a href="#">О нас</a>
+      </nav>
+
+    </div>
+</header>
+  <main class="main">
+      {% block content %}
+       <div class="category-menu" style="flex: 1; min-width: 200px; background: white; padding: 12px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
+      <h3 style="font-size: 15px; margin: 0; color: #333; font-weight: 600;">Категории</h3>
+      <a href="#" style="font-size: 12px; color: #e67e22; text-decoration: none;">Все</a>
+    </div>
+    <ul style="font-size: 13px; list-style: none; padding: 0; margin: 0;">
+      <li style="margin-bottom: 8px;">
+        <a href="#" style="color: #555; text-decoration: none; display: block; padding: 6px 8px; border-radius: 3px; transition: all 0.2s; background-color: #f8f9fa;">
+          Классические
+        </a>
+      </li>
+      <li style="margin-bottom: 8px;">
+        <a href="#" style="color: #555; text-decoration: none; display: block; padding: 6px 8px; border-radius: 3px; transition: all 0.2s; background-color: #f8f9fa;">
+          Острые
+        </a>
+      </li>
+      <li style="margin-bottom: 8px;">
+        <a href="#" style="color: #555; text-decoration: none; display: block; padding: 6px 8px; border-radius: 3px; transition: all 0.2s; background-color: #f8f9fa;">
+          Вегетарианские
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+      {% endblock %} <!-- Блок для основного контента -->
+  </main>
+
+  <footer class="pizza-footer">
+    <div class="footer-content">
+        <p class="copyright">© 2025 Наша Пиццерия! Все права защищены</p>
+        <div class="footer-links">
+            <a href="/privacy" class="footer-link">Правила конфиденциальности</a>
+            <a href="/terms" class="footer-link">Условия использования</a>
+            <a href="/contacts" class="footer-link">Контакты</a>
+            
+        </div>
+    </div>
+</footer>
+<style>
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 15px 0;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-brand {
+  color: #e67e22;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 25px;
+}
+
+.header-nav {
+  display: flex;
+  gap: 20px;
+}
+
+.header-nav a {
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+.header-nav a:hover {
+  color: #e67e22;
+}
+
+.main {
+  flex: 1;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.pizza-footer {
+  flex-shrink: 0;
+  background-color: #f8f8f8;
+  padding: 20px 0;
+  border-top: 1px solid #e7e7e7;
+}
+
+.footer-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.copyright {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-link {
+  color: #e67e22;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+.footer-link:hover {
+  color: #d35400;
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .header-container {
+      flex-direction: column;
+      gap: 15px;
+  }
+  
+  .header-brand {
+      left: 0;
+  }
+  
+  .header-nav {
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+  }
+  
+  .footer-links {
+      flex-direction: column;
+      gap: 8px;
+  }
+}
+</style>
+</body>
+</html>
+

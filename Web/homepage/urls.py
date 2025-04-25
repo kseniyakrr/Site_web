@@ -7,7 +7,9 @@ register_converter(CurrencyConverter, 'currency')
 register_converter(FloatConverter, 'float')
 
 urlpatterns = [
-    path('', views.homepage),
+    path('', views.homepage, name='homepage'),
     path('pizza/<int:pizza_id>/', views.pizza_detail, name='pizza_detail'),
-    path('exchange/<currency:pair>/<float:amount>/', views.exchange, name='exchange')
+    path('menu/', views.menu, name='menu'),  
+    path('category/<int:category_id>/', views.category_list, name='category_list'),
+    
 ]
