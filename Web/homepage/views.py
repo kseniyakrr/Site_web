@@ -1,59 +1,26 @@
+from unicodedata import category
 from django.http import Http404, HttpResponse, HttpResponseNotFound
 from django.http import JsonResponse
 from datetime import datetime
 from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from .models import Pizza, Category
 
-pizzas_db = [
-        {'id': 1, 
-         'name': 'Маргарита', 
-         'description': '"Маргарита" - Итальянская Классика! Сочное тесто, томатный соус, тающая моцарелла и ароматный базилик. Просто, как гениально! Состав: Тесто, томатный соус, моцарелла, базилик, оливковое масло. КБЖУ (на 100 г): 240 ккал, 11г белки, 10г жиры, 25г углеводы. Попробуйте вкус Италии!', 
-         'price': 450, 
-         'image_url': 'https://i.pinimg.com/736x/56/44/b3/5644b320d50cf5d58ce3a75c244c0e83.jpg', 
-         'category_id': 1
-        },
-
-        {'id': 2, 
-         'name': 'Пепперони', 
-         'description': 'Пикантная колбаса пепперони, томатный соус и моцарелла на сочном тесте. Для любителей поострее! Состав: Тесто, томатный соус, моцарелла, пепперони, оливковое масло. КБЖУ (на 100 г): 280 ккал, 13г белки, 14г жиры, 24г углеводы. Закажите "Пепперони"!', 
-         'price': 500, 
-         'image_url': 'https://i.pinimg.com/736x/92/ad/03/92ad03ae1fcbc8bc94c3cc7570e0dbc6.jpg', 
-         'category_id': 2
-         },
-    ]
-
-categories_db = [
-        {'id': 1, 'name': 'Классические'},
-        {'id': 2, 'name': 'Острые'},
-        {'id': 3, 'name': 'Вегетарианские'},
-    ]
 
      
-# Create your views here.
 def homepage(request):
-    cat_selected = request.GET.get('category_id')
+    # Получаем все пиццы с оптимизацией запросов
     
-    # Фильтрация пицц
-    if cat_selected and cat_selected.isdigit() and int(cat_selected) > 0:
-        # Если выбрана конкретная категория (не "Все")
-        pizzas = [pizza for pizza in pizzas_db if pizza['category_id'] == int(cat_selected)]
-        cat_selected = int(cat_selected)
-    else:
-        # Если выбрано "Все" или категория не указана
-        pizzas = pizzas_db  # Показываем все пиццы
-        cat_selected = 0    # 0 - это ID для "Все"
-
+    pizzas = Pizza.objects.filter(is_available=True).select_related("category")
+    
     context = {
-        'headline': 'Новинка: Пицца Маргарита!',
-        'description': 'Сочная пицца со свежими томатами, базиликом и сыром моцарелла',
-        'cta': 'Попробуйте',
-        'image_url': 'URL_ВАШЕГО_БАННЕРА',
         'title': 'Главная страница',
         'pizzas': pizzas,
-        'categories': categories_db,
-        'cat_selected': cat_selected
+        'categories': Category.objects.all(),
+        'cat_selected': ''  # Не используем фильтрацию на сервере
     }
-    
     return render(request, 'homepage/homepage/homepage.html', context)
+
 
 
 
@@ -129,38 +96,27 @@ def menu(request, category_id=0):
     return render(request, 'menu/menu.html', context)
 
 
-def category_list(request, category_id):
+def category_list(request, category_slug):
     """Отображает все пиццы в выбранной категории"""
-    # Находим категорию
-    category = next((c for c in categories_db if c['id'] == category_id), None)
+    category = get_object_or_404(Category, slug=category_slug)
     
-    if not category:
-        return render(request, '404.html', status=404)
-    
-    # Фильтруем пиццы по категории
-    pizzas = [pizza for pizza in pizzas_db if pizza['category_id'] == category_id]
-    
+    # Получаем доступные пиццы этой категории
+    pizzas = Pizza.available.filter(category__slug=category_slug)
+
     context = {
         'category': category,
-        'pizzas': pizzas,
-        'categories': categories_db,
-        'title': f'Пиццы категории {category["name"]}'
+        'pizzas': Pizza.published.all(),
+        'categories': Category.objects.all(),
+        'title': f'Пиццы категории {category.name}',
+        'cat_selected': category.slug  # Передаем slug категории
     }
-    return render(request, 'pizza/category_list.html', context)
 
-def pizza_detail(request, pizza_id):
-   
-    pizza = next((p for p in pizzas_db if p['id'] == pizza_id), None)
-    
-    if not pizza:
-        return render(request, '404.html', status=404)
-    
-    context = {
-        'pizza': pizza,
-        'title': pizza['name'],
- 
-    }
-    return render(request, 'pizza_detail/pizza_detail.html', context)
+    return render(request, 'homepage/category_list.html', context)
+
+def pizza_detail(request, pizza_slug):
+    pizza = get_object_or_404(Pizza, slug=pizza_slug)  # Исправлено 'slug-pizza_slug' на 'slug=pizza_slug'
+    return render(request, 'pizza_detail/pizza_detail.html', {'pizza': pizza})
+
 def current_time(request):
     return {
         'current_time': datetime.now()

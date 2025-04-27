@@ -8,8 +8,8 @@ register_converter(FloatConverter, 'float')
 
 urlpatterns = [
     path('', views.homepage, name='homepage'),
-    path('pizza/<int:pizza_id>/', views.pizza_detail, name='pizza_detail'),
+    path('pizza/<slug:pizza_slug>/', views.pizza_detail, name='pizza_detail'),
     path('menu/', views.menu, name='menu'),  
-    path('category/<int:category_id>/', views.category_list, name='category_list'),
+    path('category/<slug:category_slug>/', views.category_list, name='category_list'),
     
 ]

@@ -19,49 +19,127 @@
       </div>
     </div>
 
-    <!-- Категории -->
-    <h2 class="section-title">Категории</h2>
-    <div class="categories-list">
-        <a href="?category_id=0" class="category-item {% if cat_selected == 0 %}active{% endif %}">
-            ВСЕ
-        </a>
-        {% for category in categories %}
-        <a href="?category_id={{ category.id }}" 
-           class="category-item {% if cat_selected == category.id %}active{% endif %}">
-            {{ category.name|upper }}
-        </a>
-        {% endfor %}
-    </div>
-
-    <!-- Список пицц -->
-    <h2 class="section-title">Наши пиццы</h2>
-    <div class="pizzas-grid">
-        {% for pizza in pizzas %}
-        <div class="pizza-card">
-            <img src="{{ pizza.image_url }}" alt="{{ pizza.name }}" class="pizza-image">
-            <div class="pizza-content">
-                <h3 class="pizza-title">{{ pizza.name|upper }}</h3>
-                <p class="pizza-description">{{ pizza.description|truncatewords:12 }}</p>
-                <p class="pizza-category">Категория: 
-                    {% for category in categories %}
-                        {% if category.id == pizza.category_id %}
-                            {{ category.name }}
-                        {% endif %}
-                    {% endfor %}
-                </p>
-                <p class="pizza-price">Цена: {{ pizza.price }} ₽</p>
-                <div class="pizza-link-container">
-                    <a href="{% url 'pizza_detail' pizza.id %}" class="pizza-link">Заказать</a>
-                </div>
-            </div>
-        </div>
-        {% empty %}
-        <p class="empty-message">В этой категории пока нет пицц</p>
-        {% endfor %}
-    </div>
+  <!-- Категории -->
+<h2 class="section-title">Категории</h2>
+<div class="categories-list">
+    <button class="category-filter active" data-category-slug="all">ВСЕ</button>
+    {% for category in categories %}
+    <button class="category-filter" data-category-slug="{{ category.slug }}">
+        {{ category.name|upper }}
+    </button>
+    {% endfor %}
 </div>
 
+<!-- Список пицц -->
+<h2 class="section-title">Наши пиццы</h2>
+<div class="pizzas-grid">
+    {% for pizza in pizzas %}
+    <div class="pizza-card" data-category-slug="{{ pizza.category.slug }}">
+        {% if pizza.image %}
+        <img src="{{ pizza.image.url }}" alt="{{ pizza.name }}" class="pizza-image">
+        {% else %}
+        <div class="pizza-image-placeholder">Нет изображения</div>
+        {% endif %}
+        
+        <div class="pizza-content">
+            <h3 class="pizza-title">{{ pizza.name|upper }}</h3>
+            <p class="pizza-description">{{ pizza.description|truncatewords:12 }}</p>
+            
+            <div class="pizza-meta">
+                <p class="pizza-category">
+                    <span>Категория:</span> {{ pizza.category.name }}
+                </p>
+                
+                <p class="pizza-price">
+                    <span>Цена:</span> {{ pizza.price }} ₽
+                    <span class="pizza-diameter">({{ pizza.diameter }} см)</span>
+                </p>
+            </div>
+            
+            <div class="pizza-link-container">
+                <a href="{% url 'pizza_detail' pizza.slug %}" class="pizza-link">
+                    Подробнее
+                </a>
+                {% if pizza.is_available %}
+                <button class="order-btn" data-slug="{{ pizza.slug }}">Заказать</button>
+                {% else %}
+                <span class="out-of-stock">Нет в наличии</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="empty-message">Пицц пока нет</p>
+    {% endfor %}
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('.category-filter');
+        const pizzaCards = document.querySelectorAll('.pizza-card');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Убираем активный класс у всех кнопок
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Добавляем активный класс текущей кнопке
+                this.classList.add('active');
+                
+                const selectedCategory = this.dataset.categorySlug;
+                
+                // Фильтруем пиццы с анимацией
+                pizzaCards.forEach(card => {
+                    if (selectedCategory === 'all' || card.dataset.categorySlug === selectedCategory) {
+                        card.style.display = 'block';
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'scale(1)';
+                        }, 10);
+                    } else {
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            card.style.display = 'none';
+                        }, 300);
+                    }
+                });
+            });
+        });
+    });
+</script>
+
 <style>
+    .category-filter {
+    padding: 8px 16px;
+    border: none;
+    background: #f5f5f5;
+    cursor: pointer;
+    border-radius: 20px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+    .category-filter.active {
+    background: #ff6b6b;
+    color: white;
+}
+
+/* Анимация карточек */
+    .pizza-card {
+    transition: all 0.3s ease;
+    opacity: 1;
+    transform: scale(1);
+}
+
+    .pizza-card.hidden {
+    opacity: 0;
+    transform: scale(0.95);
+    height: 0;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
     .pizzeria-container {
         max-width: 1000px;
         margin: 0 auto;

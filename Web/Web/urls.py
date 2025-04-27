@@ -15,9 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin # type: ignore
 from django.urls import include, path # type: ignore
+from django.conf import settings
+from django.conf.urls.static import static
+
+
+
 handler404 = 'homepage.views.page_not_found'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('homepage.urls')),
-    path('pizza/', include('homepage.urls')),
 ]

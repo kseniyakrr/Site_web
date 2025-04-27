@@ -1,20 +1,25 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block content %}
-<div class="pizza-detail-container">
-    <div class="pizza-main">
-        <img src="{{ pizza.image_url }}" alt="{{ pizza.name }}" class="pizza-image">
-        <div class="pizza-info">
-            <h1>{{ pizza.name }}</h1>
-            <p class="description">{{ pizza.description }}</p>
-            <div class="price">{{ pizza.price }} ₽</div>
-            <button class="order-button">Добавить в корзину</button>
-        </div>
-    </div>
-</div>
+<div class="pizza-detail">
+    <h1>{{ pizza.name }}</h1>
     
+    {% if pizza.image %}
+    <div class="pizza-image">
+        <img src="{{ pizza.image.url }}" alt="{{ pizza.name }}" class="img-fluid">
+    </div>
+    {% endif %}
+    
+    <div class="pizza-info">
+        <p><strong>Описание:</strong> {{ pizza.description }}</p>
+        <p><strong>Цена:</strong> {{ pizza.price }} руб.</p>
+        <p><strong>Диаметр:</strong> {{ pizza.diameter }} см</p>
+        <p><strong>Доступность:</strong> {% if pizza.is_available %}В наличии{% else %}Нет в наличии{% endif %}</p>
+    </div>
+    
+    <a href="{% url 'homepage' %}" class="btn btn-primary">Назад к списку</a>
 </div>
+
 <style>
     .pizza-detail-container {
         max-width: 1000px;
