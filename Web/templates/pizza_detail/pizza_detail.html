@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <div class="pizza-detail">
     <h1>{{ pizza.name }}</h1>
     
@@ -15,6 +16,24 @@
         <p><strong>Цена:</strong> {{ pizza.price }} руб.</p>
         <p><strong>Диаметр:</strong> {{ pizza.diameter }} см</p>
         <p><strong>Доступность:</strong> {% if pizza.is_available %}В наличии{% else %}Нет в наличии{% endif %}</p>
+        
+        <!-- Блок с тегами пиццы -->
+        {% with pizza.tags.all as pizza_tags %}
+        {% if pizza_tags %}
+        <div class="pizza-tags">
+            <p><strong>Теги:</strong></p>
+            <ul class="tags-list">
+                {% for tag in pizza_tags %}
+                <li>
+                    <a href="{% url 'pizzas_by_tag' tag.slug %}" class="tag">
+                        {{ tag.name }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% endwith %}
     </div>
     
     <a href="{% url 'homepage' %}" class="btn btn-primary">Назад к списку</a>

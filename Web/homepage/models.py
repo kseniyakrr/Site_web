@@ -9,6 +9,8 @@ class AvailablePizzaManager(models.Manager):
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=255, db_index=True, unique=True)
+    def get_absolute_url(self):
+        return reverse('category', kwargs={'category_slug': self.slug})
 
 
     def save(self, *args, **kwargs):
@@ -30,7 +32,7 @@ class Pizza(models.Model):
         NOTAVAILABLE = 0, 'Нет в наличии'
         AVAILABLE = 1, 'Есть в наличии'
     name = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255, unique=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, db_index=True)
     description = models.TextField(blank=True, verbose_name='Описание')
     price = models.DecimalField(max_digits=6, decimal_places=2, verbose_name='Цена')
     diameter = models.PositiveIntegerField(verbose_name='Диаметр (см)')
@@ -39,7 +41,11 @@ class Pizza(models.Model):
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время обновления')
     image = models.ImageField(upload_to='pizzas/', blank=True, null=True, verbose_name='Изображение')
     category = models.ForeignKey(Category, on_delete=models.PROTECT, default = 1)
-    
+    tags = models.ManyToManyField('TagPost', blank=True, related_name='pizzas')
+    history = models.OneToOneField('PizzaHistory', on_delete=models.SET_NULL, null=True, related_name='history')
+
+
+
     objects = models.Manager()
     published = AvailablePizzaManager()
 
@@ -66,7 +72,19 @@ class Pizza(models.Model):
             self.slug = unique_slug
         super().save(*args, **kwargs)
 
+class TagPost(models.Model):
+    tag = models.CharField(max_length=100, db_index=True)
+    slug = models.SlugField(max_length=255, unique=True, db_index=True)
 
+    def get_absolute_url(self):
+        return reverse('tag', kwargs={'tag_slug': self.slug})
+    def __str__(self):
+        return self.tag
+
+class PizzaHistory(models.Model):
+    inspiration = models.TextField(blank=True)
+    def __str__(self):
+        return self.name
 
        
 

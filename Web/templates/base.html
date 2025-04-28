@@ -1,202 +1,251 @@
+{% load pizza_tags %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Пицца{% endblock %}</title> 
+    <title>{% block title %}Пицца{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    {% block extra_head %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <style>
         html {
-          font-size: 24px;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-size: 24px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Header styles */
+        .header {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-brand {
+            color: #e67e22;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 25px;
+        }
+        
+        .header-nav {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+        }
+        
+        .header-nav a {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .header-nav a:hover {
+            color: #e67e22;
+        }
+        
+        /* Dropdown styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            display: none;
+            min-width: 160px;
+            padding: 5px 0;
+            margin: 2px 0 0;
+            font-size: 14px;
+            list-style: none;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+        }
+        
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-menu li {
+            padding: 3px 20px;
+            color: #333;
+        }
+        
+        .dropdown-menu li:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .caret {
+            display: inline-block;
+            width: 0;
+            height: 0;
+            margin-left: 5px;
+            vertical-align: middle;
+            border-top: 4px solid;
+            border-right: 4px solid transparent;
+            border-left: 4px solid transparent;
+        }
+        
+        /* Main content */
+        .main {
+            flex: 1;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Footer styles */
+        .pizza-footer {
+            background-color: #f8f8f8;
+            padding: 20px 0;
+            border-top: 1px solid #e7e7e7;
+        }
+        
+        .footer-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 15px;
+            text-align: center;
+        }
+        
+        .copyright {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .footer-link {
+            color: #e67e22;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 600px) {
+            .header-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header-nav {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 8px;
+            }
         }
     </style>
-{% endblock %} <!-- Блок для добавления дополнительных стилей или скриптов -->
 </head>
 <body>
-  <header class="header">
-    <div class="header-container">
-      <a href="/" class="header-brand">
-        <span class="fs-4" style="font-size: 25px; position: relative; left: -80px;">Наша Пиццерия!</span>  <!-- Уменьшен логотип -->
-      </a>
-    
-      <nav class="header-nav" style="font-size: 14px; ">  <!-- Уменьшены пункты меню -->
-        <a href="#">Меню</a>
-        <a href="#">Поиск</a>
-        <a href="#">Корзина</a>
-        <a href="#">О нас</a>
-      </nav>
-
-    </div>
-</header>
-  <main class="main">
-      {% block content %}
-       <div class="category-menu" style="flex: 1; min-width: 200px; background: white; padding: 12px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
-    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
-      <h3 style="font-size: 15px; margin: 0; color: #333; font-weight: 600;">Категории</h3>
-      <a href="#" style="font-size: 12px; color: #e67e22; text-decoration: none;">Все</a>
-    </div>
-    <ul style="font-size: 13px; list-style: none; padding: 0; margin: 0;">
-      <li style="margin-bottom: 8px;">
-        <a href="#" style="color: #555; text-decoration: none; display: block; padding: 6px 8px; border-radius: 3px; transition: all 0.2s; background-color: #f8f9fa;">
-          Классические
-        </a>
-      </li>
-      <li style="margin-bottom: 8px;">
-        <a href="#" style="color: #555; text-decoration: none; display: block; padding: 6px 8px; border-radius: 3px; transition: all 0.2s; background-color: #f8f9fa;">
-          Острые
-        </a>
-      </li>
-      <li style="margin-bottom: 8px;">
-        <a href="#" style="color: #555; text-decoration: none; display: block; padding: 6px 8px; border-radius: 3px; transition: all 0.2s; background-color: #f8f9fa;">
-          Вегетарианские
-        </a>
-      </li>
-    </ul>
-  </div>
-</div>
-
-      {% endblock %} <!-- Блок для основного контента -->
-  </main>
-
-  <footer class="pizza-footer">
-    <div class="footer-content">
-        <p class="copyright">© 2025 Наша Пиццерия! Все права защищены</p>
-        <div class="footer-links">
-            <a href="/privacy" class="footer-link">Правила конфиденциальности</a>
-            <a href="/terms" class="footer-link">Условия использования</a>
-            <a href="/contacts" class="footer-link">Контакты</a>
+    <header class="header">
+        <div class="header-container">
+            <a href="/" class="header-brand">
+                <span style="font-size: 25px;">Наша Пиццерия!</span>
+            </a>
             
+            <nav class="header-nav">
+                <a href="#">Меню</a>
+                <a href="#">Поиск</a>
+                <a href="#">Корзина</a>
+                <a href="#">О нас</a>
+                
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle">Теги <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                    
+                        {% show_tags %}
+                    </ul>
+                </div>
+            </nav>
         </div>
-    </div>
-</footer>
-<style>
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+    </header>
 
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
+    <main class="main">
+        {% block content %}
+        <div class="category-menu" style="flex: 1; min-width: 200px; background: white; padding: 12px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
+                <h3 style="font-size: 15px; margin: 0; color: #333; font-weight: 600;">Категории</h3>
+                <a href="#" style="font-size: 12px; color: #e67e22; text-decoration: none;">Все</a>
+            </div>
+            <ul style="font-size: 13px; list-style: none; padding: 0; margin: 0;">
+                <li style="margin-bottom: 8px;">
+                    <a href="#" style="color: #555; text-decoration: none; display: block; padding: 6px 8px; border-radius: 3px; transition: all 0.2s; background-color: #f8f9fa;">
+                        Классические
+                    </a>
+                </li>
+                <li style="margin-bottom: 8px;">
+                    <a href="#" style="color: #555; text-decoration: none; display: block; padding: 6px 8px; border-radius: 3px; transition: all 0.2s; background-color: #f8f9fa;">
+                        Острые
+                    </a>
+                </li>
+                <li style="margin-bottom: 8px;">
+                    <a href="#" style="color: #555; text-decoration: none; display: block; padding: 6px 8px; border-radius: 3px; transition: all 0.2s; background-color: #f8f9fa;">
+                        Вегетарианские
+                    </a>
+                </li>
+            </ul>
+        </div>
+        {% endblock %}
+    </main>
 
-.header {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  padding: 15px 0;
-}
+    <footer class="pizza-footer">
+        <div class="footer-content">
+            <p class="copyright">© 2025 Наша Пиццерия! Все права защищены</p>
+            <div class="footer-links">
+                <a href="/privacy" class="footer-link">Правила конфиденциальности</a>
+                <a href="/terms" class="footer-link">Условия использования</a>
+                <a href="/contacts" class="footer-link">Контакты</a>
+            </div>
+        </div>
+    </footer>
 
-.header-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-brand {
-  color: #e67e22;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 25px;
-}
-
-.header-nav {
-  display: flex;
-  gap: 20px;
-}
-
-.header-nav a {
-  color: #333;
-  text-decoration: none;
-  font-size: 14px;
-  transition: color 0.3s;
-}
-
-.header-nav a:hover {
-  color: #e67e22;
-}
-
-.main {
-  flex: 1;
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-.pizza-footer {
-  flex-shrink: 0;
-  background-color: #f8f8f8;
-  padding: 20px 0;
-  border-top: 1px solid #e7e7e7;
-}
-
-.footer-content {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 0 15px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.copyright {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-.footer-links {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.footer-link {
-  color: #e67e22;
-  text-decoration: none;
-  font-size: 14px;
-  transition: color 0.3s;
-}
-
-.footer-link:hover {
-  color: #d35400;
-  text-decoration: underline;
-}
-
-@media (max-width: 600px) {
-  .header-container {
-      flex-direction: column;
-      gap: 15px;
-  }
-  
-  .header-brand {
-      left: 0;
-  }
-  
-  .header-nav {
-      flex-direction: column;
-      gap: 10px;
-      align-items: center;
-  }
-  
-  .footer-links {
-      flex-direction: column;
-      gap: 8px;
-  }
-}
-</style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            // Активация выпадающего меню при клике
+            $('.dropdown-toggle').click(function(e){
+                e.preventDefault();
+                $(this).next('.dropdown-menu').toggle();
+            });
+            
+            // Закрытие при клике вне меню
+            $(document).click(function(e) {
+                if (!$(e.target).closest('.dropdown').length) {
+                    $('.dropdown-menu').hide();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
-

@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from datetime import datetime
 from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
-from .models import Pizza, Category
+from .models import Pizza, Category, TagPost
 
 
      
@@ -17,7 +17,8 @@ def homepage(request):
         'title': 'Главная страница',
         'pizzas': pizzas,
         'categories': Category.objects.all(),
-        'cat_selected': ''  # Не используем фильтрацию на сервере
+        'pizzas': Pizza.objects.all(),
+        'cat_selected': 0,  # Не используем фильтрацию на сервере
     }
     return render(request, 'homepage/homepage/homepage.html', context)
 
@@ -105,7 +106,7 @@ def category_list(request, category_slug):
 
     context = {
         'category': category,
-        'pizzas': Pizza.published.all(),
+        'pizzas': Pizza.objects.all(),
         'categories': Category.objects.all(),
         'title': f'Пиццы категории {category.name}',
         'cat_selected': category.slug  # Передаем slug категории
@@ -123,5 +124,16 @@ def current_time(request):
     }
      
 
-
+def show_tag(request, tag_slug=None):
+    tag = None
+    pizzas = Pizza.objects.all()
+    
+    if tag_slug:
+        tag = get_object_or_404(TagPost, slug=tag_slug)
+        pizzas = pizzas.filter(tags__in=[tag])
+    
+    return render(request, 'homepage/homepage.html', {
+        'pizzas': pizzas,
+        'tag': tag
+    })
 
