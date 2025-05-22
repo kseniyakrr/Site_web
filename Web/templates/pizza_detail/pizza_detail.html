@@ -6,8 +6,9 @@
     <h1>{{ pizza.name }}</h1>
     
     {% if pizza.image %}
-    <div class="pizza-image">
-        <img src="{{ pizza.image.url }}" alt="{{ pizza.name }}" class="img-fluid">
+    <div class="pizza-image" style="width: 300px; height: 300px; overflow: hidden; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <img src="{{ pizza.image.url }}" alt="{{ pizza.name }}" 
+             style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
     </div>
     {% endif %}
     
@@ -16,7 +17,7 @@
         <p><strong>Цена:</strong> {{ pizza.price }} руб.</p>
         <p><strong>Диаметр:</strong> {{ pizza.diameter }} см</p>
         <p><strong>Доступность:</strong> {% if pizza.is_available %}В наличии{% else %}Нет в наличии{% endif %}</p>
-        
+        <p><strong>История создания:</strong> {{ pizza.history_text }}</p>
         <!-- Блок с тегами пиццы -->
         {% with pizza.tags.all as pizza_tags %}
         {% if pizza_tags %}
@@ -25,8 +26,8 @@
             <ul class="tags-list">
                 {% for tag in pizza_tags %}
                 <li>
-                    <a href="{% url 'pizzas_by_tag' tag.slug %}" class="tag">
-                        {{ tag.name }}
+                    <a href="{% url 'tag' tag.slug %}" class="tag">
+                        {{ tag.tag }}
                     </a>
                 </li>
                 {% endfor %}
@@ -53,7 +54,7 @@
     }
 
     .pizza-image {
-        width: 350px; /* Уменьшенный размер картинки */
+        width: 10px; /* Уменьшенный размер картинки */
         height: auto;
         border-radius: 8px;
         object-fit: cover;
@@ -104,7 +105,7 @@
         }
         
         .pizza-image {
-            width: 100%;
+            width: 20%;
             max-width: 350px;
             margin: 0 auto;
         }
