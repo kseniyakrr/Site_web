@@ -70,7 +70,6 @@ class Pizza(models.Model):
     
 
 
-
     
     class Meta:
         verbose_name = 'Пицца'

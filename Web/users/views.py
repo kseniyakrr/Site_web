@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth import authenticate, login, logout
-from .forms import LoginUserForm, ProfileUserForm, RegisterUserForm
+from .forms import LoginUserForm, ProfileUserForm, RegisterUserForm, User
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LogoutView
@@ -61,13 +61,19 @@ class RegisterUser(CreateView):
     success_url = reverse_lazy('users:login')
 
 class ProfileUser(LoginRequiredMixin, UpdateView):
-    model = get_user_model()
-    form_class = ProfileUserForm
+    model = User
+    fields = ['photo', 'username', 'email', 'first_name', 'last_name', 'date_birth']  # Все поля, которые нужно редактировать
     template_name = 'users/profile.html'
-    extra_context = {'title': "Профиль пользователя",'default_image': settings.DEFAULT_USER_IMAGE}
-    success_url = reverse_lazy('users:profile')
-    def get_object(self, queryset=None):
-        return self.request.user
+    success_url = reverse_lazy('users:profile')  # Перенаправление после успешного сохранения
+    
+    def get_object(self):
+        return self.request.user  # Работаем с текущим пользователем
+    
+    def form_valid(self, form):
+        # Дополнительная обработка перед сохранением
+        return super().form_valid(form)
+
+
 
 class UserPasswordChange(PasswordChangeView):
     form_class = UserPasswordChangeForm

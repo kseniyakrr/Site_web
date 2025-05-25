@@ -4,32 +4,42 @@
     <h1 style="text-align: center; margin-bottom: 30px;">Профиль</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <div style="text-align: center; margin-bottom: 20px;">
-            {% if user.photo and user.photo.url %}
-                <img src="{{ user.photo.url }}" 
-                     style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 2px solid #eee;">
-            {% else %}
-                <img src="{{ default_image }}" 
-                     style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 2px solid #eee;">
-            {% endif %}
-        </div>
         
-        <!-- Остальная часть формы остается без изменений -->
+        <!-- Блок с фото -->
+        <div style="text-align: center; margin-bottom: 20px;">
+            <label for="id_photo" style="cursor: pointer;">
+                <img src="{% if user.photo %}{{ user.photo.url }}{% else %}{{ default_image }}{% endif %}"
+                     style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 2px solid #eee;"
+                     id="photo-preview">
+                <input type="file" name="photo" accept="image/*" id="id_photo" style="display: none;">
+            </label>
+            <div style="margin-top: 10px;">
+                <label for="id_photo" style="padding: 6px 12px; background: #4CAF50; color: white; border-radius: 4px; cursor: pointer;">
+                    Изменить фото
+                </label>
+            </div>
+        </div>
+
+        <!-- Остальные поля формы -->
         <div class="form-error" style="grid-column: span 2;">{{ form.non_field_errors}}</div>
         
         {% for f in form %}
-        <label class="form-label" for="{{ f.id_for_label }}" style="text-align: right; padding-right: 15px;">
-            {{ f.label }}:
-        </label>
-        <div style="display: flex; flex-direction: column;">
-            {{ f }}
-            <div class="form-error" style="color: red; font-size: 0.8em; margin-top: 5px;">{{ f.errors }}</div>
-        </div>
+            {% if f.name != 'photo' %}
+            <div style="display: grid; grid-template-columns: 150px 1fr; gap: 15px; align-items: center; margin-bottom: 15px;">
+                <label class="form-label" for="{{ f.id_for_label }}" style="text-align: right; padding-right: 15px;">
+                    {{ f.label }}:
+                </label>
+                <div style="display: flex; flex-direction: column;">
+                    {{ f }}
+                    <div class="form-error" style="color: red; font-size: 0.8em; margin-top: 5px;">{{ f.errors }}</div>
+                </div>
+            </div>
+            {% endif %}
         {% endfor %}
         
-        <div style="grid-column: 2; margin-top: 20px;">
-            <button type="submit" style="padding: 8px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                Сохранить
+        <div style="text-align: center; margin-top: 20px;">
+            <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Сохранить изменения
             </button>
         </div>
     </form>
@@ -45,5 +55,17 @@
     </div>
 </div>
 
+<script>
+// JavaScript для предпросмотра фото перед загрузкой
+document.getElementById('id_photo').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('photo-preview').src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+});
+</script>
 {% endblock %}
-
