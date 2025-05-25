@@ -1,11 +1,24 @@
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth import authenticate, login, logout
-from .forms import LoginUserForm
+from .forms import LoginUserForm, ProfileUserForm, RegisterUserForm
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LogoutView
+from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import get_user_model
+from django.views.generic import UpdateView
+from django.contrib.auth.views import PasswordChangeView
+from .forms import UserPasswordChangeForm
+from django.contrib.auth.views import (
+    PasswordResetView,
+    PasswordResetDoneView,
+    PasswordResetConfirmView,
+    PasswordResetCompleteView
+)
 
 # Create your views here.
 
@@ -38,3 +51,50 @@ class LogoutUser(LogoutView):
     form_class = AuthenticationForm
     extra_context = {'title': 'Выход из системы'}
     template_name = 'users/login.html'
+
+
+
+class RegisterUser(CreateView):
+    form_class = RegisterUserForm
+    template_name = 'users/register.html'
+    extra_context = {'title': "Регистрация"}
+    success_url = reverse_lazy('users:login')
+
+class ProfileUser(LoginRequiredMixin, UpdateView):
+    model = get_user_model()
+    form_class = ProfileUserForm
+    template_name = 'users/profile.html'
+    extra_context = {'title': "Профиль пользователя",'default_image': settings.DEFAULT_USER_IMAGE}
+    success_url = reverse_lazy('users:profile')
+    def get_object(self, queryset=None):
+        return self.request.user
+
+class UserPasswordChange(PasswordChangeView):
+    form_class = UserPasswordChangeForm
+    success_url = reverse_lazy("users:password_change_done")
+    template_name = "users/password_change_form.html"
+    extra_context = {'title': "Изменение пароля"}
+
+
+class CustomPasswordResetView(PasswordResetView):
+    """Кастомное представление для сброса пароля"""
+    template_name = 'users/password_reset_form.html'
+    email_template_name = 'users/password_reset_email.html'
+    subject_template_name = 'users/password_reset_subject.txt'
+    success_url = reverse_lazy('users:password_reset_done')
+
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    """Сообщение об отправке письма"""
+    template_name = 'users/password_reset_done.html'
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    """Подтверждение сброса пароля"""
+    template_name = 'users/password_reset_confirm.html'
+    success_url = reverse_lazy('users:password_reset_complete')
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    """Сообщение об успешном сбросе пароля"""
+    template_name = 'users/password_reset_complete.html'
+
+    

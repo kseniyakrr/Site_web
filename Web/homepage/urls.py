@@ -16,6 +16,6 @@ urlpatterns = [
     path('tag/<slug:tag_slug>/', views.TagPostList.as_view(), name='tag'),
     path('addpage/', views.AddPage.as_view(), name='add_page'),
     path('about/', views.about, name='about'),
-    path('edit/<int:pk>/', views.UpdatePage.as_view(), name='edit_page'),
+    path('pizza/<slug:slug>/edit/', views.UpdatePage.as_view(), name='edit'),
     path('delete/<int:pk>/', views.DeletePizza.as_view(), name='delete_pizza'),
 ]

@@ -3,6 +3,10 @@ from django.contrib import admin
 from .models import Category, Pizza
 from django.utils.safestring import mark_safe
     
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from users.models import User
+admin.site.register(User, UserAdmin)
 
 
 

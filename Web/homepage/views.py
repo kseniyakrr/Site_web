@@ -25,6 +25,8 @@ from django.views.generic.edit import DeleteView
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin  # Добавьте этот импорт
+
      
 def homepage(request):
     # Получаем все пиццы с оптимизацией запросов
@@ -315,21 +317,23 @@ def addpage(request):
          'title': 'Добавление пиццы',
          } """
 
-class AddPage(LoginRequiredMixin, DataMixin, CreateView):
+class AddPage(PermissionRequiredMixin, LoginRequiredMixin, DataMixin, CreateView):
     model = Pizza
     fields = ['name', 'slug', 'description', 'is_available', 'category', 'image', 'tags']
     #form_class = PizzaForm
     template_name = 'homepage/addpage.html'
     success_url = reverse_lazy('homepage')
     title_page = 'Добавление пиццы'
+    permission_required = 'homepage.add_pizza'
        
     
-class UpdatePage(DataMixin, UpdateView):
+class UpdatePage(PermissionRequiredMixin, DataMixin, UpdateView):
      model = Pizza
      fields = ['name', 'description', 'image', 'is_available', 'category']
-     template_name = 'homepage/addpage.html'
+     template_name = 'homepage/edit.html'
      success_url = reverse_lazy('homepage')
      title_page = 'Редактирование пиццы'
+     permission_required = 'homepage.change_pizza'
      
 class DeletePizza(DeleteView):
     model = Pizza
@@ -373,23 +377,3 @@ def about(request):
         'files': files
     })
 
-def pizza_list(request):
-    category_slug = request.GET.get('category')
-    
-    # Фильтрация пицц
-    if category_slug:
-        pizzas = Pizza.objects.filter(category__slug=category_slug, is_available=True)
-    else:
-        pizzas = Pizza.objects.filter(is_available=True)
-    
-    # Пагинация
-    paginator = Paginator(pizzas, 6)  # 6 пицц на страницу
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
-    categories = Category.objects.all()
-    
-    return render(request, 'your_template.html', {
-        'page_obj': page_obj,
-        'categories': categories,
-    })

@@ -36,8 +36,19 @@
         {% endif %}
         {% endwith %}
     </div>
-    
+   {% if perms.women.change_women %}
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'edit' pizza.slug %}" class="edit-btn" 
+       style="display: inline-block; padding: 8px 15px; 
+              background-color: #3498db; color: white; 
+              text-decoration: none; border-radius: 4px;
+              font-size: 14px;">
+        Редактировать
+    </a>
+</div>
+{% endif %}
     <a href="{% url 'homepage' %}" class="btn btn-primary">Назад к списку</a>
+    
 </div>
 
 <style>

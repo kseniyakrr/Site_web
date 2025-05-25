@@ -29,9 +29,10 @@ ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
-AUTH_USER_MODEL = 'users.User'
+
 
 INSTALLED_APPS = [
+    
     'homepage.apps.HomepageConfig',
     'users.apps.UsersConfig',
     'django.contrib.admin',
@@ -142,4 +143,27 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_REDIRECT_URL = 'homepage'
 LOGOUT_REDIRECT_URL = 'homepage'
 LOGIN_URL = 'users:login'
+
+AUTHENTICATION_BACKENDS = [
+ 'django.contrib.auth.backends.ModelBackend',
+ 'users.authentication.EmailAuthBackend',
+]
+
+""" EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend" """
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = "smtp.yandex.ru"
+EMAIL_PORT = 465
+EMAIL_HOST_USER = "ks.korshh@yandex.ru"
+EMAIL_HOST_PASSWORD =  "ewrcjkllwfaohvzw"
+EMAIL_USE_SSL = True
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = EMAIL_HOST_USER
+EMAIL_ADMIN = EMAIL_HOST_USER
+
+AUTH_USER_MODEL = 'users.User'
+DEFAULT_USER_IMAGE = MEDIA_URL + 'users/default.png'
+
 
