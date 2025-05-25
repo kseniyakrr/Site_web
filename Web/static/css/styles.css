@@ -204,3 +204,51 @@
   }
  
  
+/* static/css/styles.css */
+:root {
+    --primary-orange: #FF8C00;  /* Темно-оранжевый */
+    --secondary-orange: #FFA500; /* Классический оранжевый */
+    --light-orange: #FFD700;     /* Светло-оранжевый/золотой */
+}
+
+/* Общие элементы */
+body {
+    background-color: #FFF8DC; /* Светло-бежевый фон */
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: var(--primary-orange);
+    padding: 1rem;
+    color: white;
+}
+
+nav a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+button, .btn {
+    background-color: var(--secondary-orange);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Карточки пицц */
+.pizza-card {
+    border: 1px solid var(--light-orange);
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px;
+}
+
+.pizza-card h3 {
+    color: var(--primary-orange);
+}
+
+

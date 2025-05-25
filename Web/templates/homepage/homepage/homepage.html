@@ -20,22 +20,28 @@
     </div>
 
   <!-- Категории -->
+<!-- Категории -->
 <h2 class="section-title">Категории</h2>
 <div class="categories-list">
-    <button class="category-filter active" data-category-slug="all">ВСЕ</button>
+    <span class="category-item {% if cat_selected is None %}active{% endif %}">
+        ВСЕ
+    </span>
     {% for category in categories %}
-    <button class="category-filter" data-category-slug="{{ category.slug }}">
+    <span class="category-item {% if cat_selected == category.id %}active{% endif %}">
         {{ category.name|upper }}
-    </button>
-    {% endfor %}
+    </span>
+    {% empty %}
+    <p>Нет доступных категорий</p>
+    {% endfor %} 
+    
 </div>
 
-<!-- Список пицц -->
+
 <h2 class="section-title">Наши пиццы</h2>
 <div class="pizzas-grid">
     {% for pizza in pizzas %}
     <div class="pizza-card" data-category-slug="{{ pizza.category.slug }}">
-        {% if pizza.image %}
+        {% if pizza.image %}  <!-- Исправлено с p.photo на pizza.image -->
         <img src="{{ pizza.image.url }}" alt="{{ pizza.name }}" class="pizza-image">
         {% else %}
         <div class="pizza-image-placeholder">Нет изображения</div>
@@ -55,9 +61,10 @@
                     <span class="pizza-diameter">({{ pizza.diameter }} см)</span>
                 </p>
             </div>
+    
             
             <div class="pizza-link-container">
-                <a href="{% url 'pizza_detail' pizza.slug %}" class="pizza-link">
+                <a href="{% if pizza.slug %}{% url 'pizza_detail' pizza.slug %}{% else %}#{% endif %}" class="pizza-link">
                     Подробнее
                 </a>
                 {% if pizza.is_available %}
@@ -70,44 +77,169 @@
     </div>
     {% empty %}
     <p class="empty-message">Пицц пока нет</p>
+    
     {% endfor %}
+   
+       
 </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const filterButtons = document.querySelectorAll('.category-filter');
-        const pizzaCards = document.querySelectorAll('.pizza-card');
-        
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // Убираем активный класс у всех кнопок
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                // Добавляем активный класс текущей кнопке
-                this.classList.add('active');
-                
-                const selectedCategory = this.dataset.categorySlug;
-                
-                // Фильтруем пиццы с анимацией
-                pizzaCards.forEach(card => {
-                    if (selectedCategory === 'all' || card.dataset.categorySlug === selectedCategory) {
-                        card.style.display = 'block';
-                        setTimeout(() => {
-                            card.style.opacity = '1';
-                            card.style.transform = 'scale(1)';
-                        }, 10);
-                    } else {
-                        card.style.opacity = '0';
-                        card.style.transform = 'scale(0.95)';
-                        setTimeout(() => {
-                            card.style.display = 'none';
-                        }, 300);
-                    }
-                });
-            });
-        });
-    });
-</script>
+{% block pagination %}
+{% if page_obj.has_other_pages %}
+<nav class="list-pages">
+    <ul>
+        {% if page_obj.has_previous %}
+        <li class="page-num">
+            <a href="?page=1">&laquo;&laquo;</a>
+        </li>
+        <li class="page-num">
+            <a href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+        </li>
+        {% endif %}
+
+        {% for p in paginator.page_range %}
+            {% if page_obj.number == p %}
+                <li class="page-num page-num-selected">{{ p }}</li>
+            {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
+                <li class="page-num">
+                    <a href="?page={{ p }}">{{ p }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-num">
+            <a href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+        </li>
+        <li class="page-num">
+            <a href="?page={{ paginator.num_pages }}">&raquo;&raquo;</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+
 
 <style>
+/* Основные стили пагинации */
+.list-pages {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.list-pages ul {
+    display: inline-flex;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+/* Общие стили для всех элементов */
+.page-num {
+    margin: 0 5px;
+}
+
+.page-num a, 
+.page-num-selected {
+    display: block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 50%;
+    font-weight: normal;
+    transition: all 0.3s ease;
+}
+
+/* Стили для кликабельных страниц */
+.page-num a {
+    background-color: #ece1d7; /* Оранжевый фон */
+    color: #000; /* Черный текст */
+    text-decoration: none;
+    border: 2px solid transparent;
+}
+
+.page-num a:hover {
+    background-color: #f67c2a; /* Темнее оранжевый при наведении */
+    color: #fff;
+}
+
+/* Стили для текущей страницы */
+.page-num-selected {
+    background-color: #e3a865; /* Светло-оранжевый фон */
+    color: #000; /* Черный текст */
+    border: 2px solid #f68c2e;
+}
+
+/* Стили для стрелок навигации */
+.page-num:first-child a,
+.page-num:last-child a {
+    background-color: #f5f5f5;
+    color: #e67e22;
+    border: 2px solid #ddd;
+}
+
+.page-num:first-child a:hover,
+.page-num:last-child a:hover {
+    background-color: #e67e22;
+    color: #fff;
+    border-color: #e67e22;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .page-num {
+        margin: 0 3px;
+    }
+    
+    .page-num a,
+    .page-num-selected {
+        width: 35px;
+        height: 35px;
+        line-height: 35px;
+        font-size: 14px;
+    }
+}
+    /* Основные стили пагинации */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination a, 
+.pagination span {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: #000; /* Черный цвет цифр */
+}
+
+/* Стили для неактивных страниц */
+.pagination a {
+    background-color: #edc8a9; /* Оранжевый фон */
+    border: 1px solid #d2691e;
+}
+
+.pagination a:hover {
+    background-color: #d35400; /* Темнее оранжевый при наведении */
+    color: #000; /* Черный цвет при наведении */
+}
+
+/* Стили для активной страницы */
+.pagination .active span {
+    color: #000; /* Черный цвет активной цифры */
+    background-color: #e88a1e; /* Светло-оранжевый фон активной */
+    border: 1px solid #e67e22;
+}
     .category-filter {
     padding: 8px 16px;
     border: none;
@@ -120,7 +252,7 @@
 }
 
     .category-filter.active {
-    background: #ff6b6b;
+    background: #f88306;
     color: white;
 }
 
@@ -273,4 +405,5 @@
         }
     }
 </style>
+
 {% endblock %}

@@ -2,6 +2,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
+    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,48 +10,71 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <style>
-        html {
-            font-size: 24px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        /* Header styles */
-        .header {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 15px 0;
-        }
-        
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .header-brand {
-            color: #e67e22;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 25px;
-        }
-        
-        .header-nav {
-            display: flex;
-            gap: 20px;
-            font-size: 14px;
-        }
-        
-        .header-nav a {
-            color: #333;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
+        html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-size: 24px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Основное содержимое - растягивается, чтобы футер был внизу */
+    .content-wrapper {
+        flex: 1 0 auto;
+        min-height: calc(100vh - 200px); /* Подстраиваем под высоту футера */
+    }
+    
+    /* Header styles */
+    .header {
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        padding: 15px 0;
+    }
+    
+    .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    /* Main content */
+    .main {
+        flex: 1;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+    }
+    
+    /* Footer styles - всегда внизу */
+    .pizza-footer {
+        background-color: #f8f8f8;
+        padding: 20px 0;
+        border-top: 1px solid #e7e7e7;
+        flex-shrink: 0;
+        margin-top: auto; /* Важно для прижатия футера */
+    }
+    
+    /* Остальные стили остаются без изменений */
+    .header-brand {
+        color: #e67e22;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 25px;
+    }
+    
+    .header-nav {
+        display: flex;
+        gap: 20px;
+        font-size: 14px;
+    }
         .header-nav a:hover {
-            color: #e67e22;
+            color: #f5751a;
         }
         
         /* Dropdown styles */
@@ -86,7 +110,7 @@
         }
         
         .dropdown-menu li:hover {
-            background-color: #f5f5f5;
+            background-color: #f8961d;
         }
         
         .caret {
@@ -110,12 +134,14 @@
         }
         
         /* Footer styles */
+        /* Footer styles - всегда внизу */
         .pizza-footer {
-            background-color: #f8f8f8;
-            padding: 20px 0;
-            border-top: 1px solid #e7e7e7;
+        background-color: #f8f8f8;
+        padding: 20px 0;
+        border-top: 1px solid #e7e7e7;
+        flex-shrink: 0;
+        margin-top: auto; /* Важно для прижатия футера */
         }
-        
         .footer-content {
             max-width: 1000px;
             margin: 0 auto;
@@ -164,57 +190,54 @@
                 gap: 8px;
             }
         }
+        
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-container">
-            <a href="/" class="header-brand">
-                <span style="font-size: 25px;">Наша Пиццерия!</span>
-            </a>
-            
-            <nav class="header-nav">
-                <a href="#">Меню</a>
-                <a href="#">Поиск</a>
-                <a href="#">Корзина</a>
-                <a href="#">О нас</a>
-                
-                <div class="dropdown">
-                    <a href="#" class="dropdown-toggle">Теги <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                    
-                        {% show_tags %}
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    </header>
 
+    <header class="header">
+    <div class="header-container">
+        <!-- Логотип -->
+        <a href="/" class="header-brand" style="text-decoration: none; color: #ff950b; font-family: 'Arial Black';">
+            <span style="font-size: 30px;">🍕 НАША ПИЦЦЕРИЯ!</span>
+        </a>
+        
+        <nav class="header-nav">
+            <!-- Основные ссылки -->
+            <a href="{% url 'about' %}" class="btn btn-about">Загрузка файлов</a>
+            
+            <!-- Кнопка "Добавить пиццу" только для авторизованных -->
+            
+                <a href="{% url 'add_page' %}" class="btn btn-addpizza">Добавить пиццу</a>
+           
+            
+            <!-- Выпадающее меню тегов -->
+            <div class="dropdown">
+                <a href="#" class="btn btn-tags">Теги <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    {% show_tags %}
+                </ul>
+            </div>
+            
+            <!-- Блок авторизации -->
+            <div class="user-auth-section" style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
+                {% if user.is_authenticated %}
+                    <div style="display: flex; align-items: center; background-color: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px;">
+                        <span class="username" style="color: rgb(255, 149, 0); font-weight: bold; margin-right: 10px;">{{ user.username }}</span>
+                        <a href="{% url 'users:logout' %}" class="btn btn-logout" style="background-color: #dc3545; color: white; padding: 5px 10px; border-radius: 4px; font-size: 0.9em;">Выйти</a>
+                    </div>
+                {% else %}
+                    <a href="{% url 'users:login' %}" class="btn btn-login" style="padding: 8px 15px; border-radius: 4px;">Войти</a>
+                    
+                {% endif %}
+            </div>
+        </nav>
+    </div>
+</header>
     <main class="main">
         {% block content %}
-        <div class="category-menu" style="flex: 1; min-width: 200px; background: white; padding: 12px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
-                <h3 style="font-size: 15px; margin: 0; color: #333; font-weight: 600;">Категории</h3>
-                <a href="#" style="font-size: 12px; color: #e67e22; text-decoration: none;">Все</a>
-            </div>
-            <ul style="font-size: 13px; list-style: none; padding: 0; margin: 0;">
-                <li style="margin-bottom: 8px;">
-                    <a href="#" style="color: #555; text-decoration: none; display: block; padding: 6px 8px; border-radius: 3px; transition: all 0.2s; background-color: #f8f9fa;">
-                        Классические
-                    </a>
-                </li>
-                <li style="margin-bottom: 8px;">
-                    <a href="#" style="color: #555; text-decoration: none; display: block; padding: 6px 8px; border-radius: 3px; transition: all 0.2s; background-color: #f8f9fa;">
-                        Острые
-                    </a>
-                </li>
-                <li style="margin-bottom: 8px;">
-                    <a href="#" style="color: #555; text-decoration: none; display: block; padding: 6px 8px; border-radius: 3px; transition: all 0.2s; background-color: #f8f9fa;">
-                        Вегетарианские
-                    </a>
-                </li>
-            </ul>
-        </div>
+        
+        
         {% endblock %}
     </main>
 

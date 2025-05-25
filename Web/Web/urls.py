@@ -18,10 +18,24 @@ from django.urls import include, path # type: ignore
 from django.conf import settings
 from django.conf.urls.static import static
 
+admin.site.site_header = "Панель администрирования Наша Пиццерия!"
+admin.site.index_title = "Управление пиццами и категориями"
+admin.site.site_title = "Наша Пиццерия! Admin"
 
 
 handler404 = 'homepage.views.page_not_found'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('homepage.urls')),
-]
+    path('users/', include('users.urls', namespace="users")),
+    path("__debug__/", include("debug_toolbar.urls")),
+
+]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]
+
+if settings.DEBUG:
+ urlpatterns += static(settings.MEDIA_URL,
+document_root=settings.MEDIA_ROOT)

@@ -1,16 +1,24 @@
+import itertools
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+from django.contrib.auth import get_user_model
+
 
 class AvailablePizzaManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_available=Pizza.Status.AVAILABLE)
 
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name = 'Категория')
     slug = models.SlugField(max_length=255, db_index=True, unique=True)
     def get_absolute_url(self):
         return reverse('category', kwargs={'category_slug': self.slug})
+      
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
 
 
     def save(self, *args, **kwargs):
@@ -26,24 +34,61 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+    
+def translit_to_eng(s: str) -> str:
+    d = {'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д':
+'d',
+ 'е': 'e', 'ё': 'yo', 'ж': 'zh', 'з': 'z', 'и':
+'i', 'к': 'k',
+ 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п':
+'p', 'р': 'r',
+ 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х':
+'h', 'ц': 'c', 'ч': 'ch',
+ 'ш': 'sh', 'щ': 'shch', 'ь': '', 'ы': 'y',
+'ъ': '', 'э': 'r', 'ю': 'yu', 'я': 'ya'}
+    return "".join(map(lambda x: d[x] if d.get(x, False) else x, s.lower()))
+
 
 class Pizza(models.Model):
     class Status(models.IntegerChoices):
         NOTAVAILABLE = 0, 'Нет в наличии'
         AVAILABLE = 1, 'Есть в наличии'
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, verbose_name = 'Название')
     slug = models.SlugField(max_length=255, unique=True, db_index=True)
     description = models.TextField(blank=True, verbose_name='Описание')
     price = models.DecimalField(max_digits=6, decimal_places=2, verbose_name='Цена')
-    diameter = models.PositiveIntegerField(verbose_name='Диаметр (см)')
-    is_available = models.BooleanField(choices=Status.choices, default=Status.NOTAVAILABLE)
+    diameter = models.PositiveIntegerField(default = 30,verbose_name='Диаметр (см)')
+    is_available = models.BooleanField(choices=tuple(map(lambda x: (bool(x[0]), x[1]), Status.choices)), default=Status.NOTAVAILABLE, verbose_name="Статус")
     time_create = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время обновления')
-    image = models.ImageField(upload_to='pizzas/', blank=True, null=True, verbose_name='Изображение')
-    category = models.ForeignKey(Category, on_delete=models.PROTECT, default = 1)
-    tags = models.ManyToManyField('TagPost', blank=True, related_name='pizzas')
-    history = models.OneToOneField('PizzaHistory', on_delete=models.SET_NULL, null=True, related_name='history')
+    image = models.ImageField(upload_to="pizzas/%Y/%m/%d/", default=None, blank=True, null=True, verbose_name="Фото")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, default = 1, verbose_name = 'Категория')
+    tags = models.ManyToManyField('TagPost', blank=True, related_name='pizzas', verbose_name = 'Тэги')
+    history = models.OneToOneField('PizzaHistory', on_delete=models.SET_NULL, null=True, related_name='history', verbose_name = 'История создания')
+    history_text = models.TextField(blank=True, verbose_name='История создания')  # Новое текстовое поле
+    
 
+
+    
+    class Meta:
+        verbose_name = 'Пицца'
+        verbose_name_plural = 'Пиццы'
+
+
+        
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = orig = slugify(self.name)
+            
+            # Проверка уникальности и добавление суффикса при необходимости
+            for x in itertools.count(1):
+                if not Pizza.objects.filter(slug=self.slug).exists():
+                    break
+                self.slug = f'{orig}-{x}'
+                
+        super().save(*args, **kwargs)
 
 
     objects = models.Manager()
@@ -61,16 +106,8 @@ class Pizza(models.Model):
         ordering = ['name']
 
     
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            base_slug = slugify(self.name)  # Определяем base_slug перед использованием
-            unique_slug = base_slug
-            num = 1
-            while Pizza.objects.filter(slug=unique_slug).exclude(pk=self.pk).exists():
-                unique_slug = f"{base_slug}-{num}"
-                num += 1
-            self.slug = unique_slug
-        super().save(*args, **kwargs)
+    
+
 
 class TagPost(models.Model):
     tag = models.CharField(max_length=100, db_index=True)
@@ -82,9 +119,20 @@ class TagPost(models.Model):
         return self.tag
 
 class PizzaHistory(models.Model):
+    name = ''
     inspiration = models.TextField(blank=True)
     def __str__(self):
         return self.name
 
        
+class UploadFiles(models.Model):
+    file = models.FileField(upload_to='uploads/%Y/%m/%d/', verbose_name="Файл")
+    uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата загрузки")
+
+    class Meta:
+        verbose_name = "Загруженный файл"
+        verbose_name_plural = "Загруженные файлы"
+
+    def __str__(self):
+        return f"Файл {self.file.name} от {self.uploaded_at}"
 
